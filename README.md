@@ -1,2 +1,0 @@
-# delivery_sendcloud_official
-Fork from delivery_sendcloud_official

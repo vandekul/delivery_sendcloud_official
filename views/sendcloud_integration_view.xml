@@ -25,6 +25,7 @@
                             <field name="sendcloud_code"/>
                             <field name="shop_url" widget="url"/>
                             <field name="active"/>
+                            <field name="kit_product"/>
                         </group>
                         <group string="Service Points">
                             <field name="service_point_enabled" string="Enabled"/>

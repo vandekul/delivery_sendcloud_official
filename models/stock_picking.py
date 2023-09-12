@@ -5,6 +5,7 @@ from collections import defaultdict
 import logging
 import json
 import uuid
+import pprint
 
 from odoo import api, fields, models, _
 from odoo.exceptions import UserError, ValidationError
@@ -218,11 +219,24 @@ class StockPicking(models.Model):
         else:
             moves = self.move_ids  # TODO should be never the case, raise an error?
         total_weight = 0.0
+        kit_description = ""
+        kit_product = self.sudo().carrier_id.sendcloud_integration_id.kit_product
+        _logger.info("TEST kit_product %s", kit_product)
         for move in moves:
-            line_vals = self._prepare_sendcloud_item_vals_from_moves(move, package=package)
-            total_weight += line_vals["weight"]
-            parcel_items += [line_vals]
+            if move.sale_line_id.product_id.is_kits and kit_product :
+                if kit_description != move.sale_line_id.product_id.display_name and kit_product:
+                    line_vals = self._prepare_sendcloud_item_vals_from_kit(move, package=package)
+                    kit_description = line_vals["description"]
+                    total_weight += line_vals["weight"]
+                    parcel_items += [line_vals]
+                    #_logger.info("KIT %s", pprint.pformat(line_vals))
+            else:
+                line_vals = self._prepare_sendcloud_item_vals_from_moves(move, package=package)
+                parcel_items += [line_vals]
+                total_weight += line_vals["weight"]
+                #_logger.info("ELSE KIT %s", pprint.pformat(line_vals))
 
+        #_logger.info("KIT %s", pprint.pformat(parcel_items))
         vals["parcel_items"] = parcel_items
 
         # Parcel properties (optional)
@@ -231,6 +245,7 @@ class StockPicking(models.Model):
         if self.sendcloud_shipment_uuid:
             vals.update({"shipment_uuid": self.sendcloud_shipment_uuid})
         if total_weight:
+            self.weight = total_weight
             vals.update({"weight": total_weight})
         vals.update({"is_return": is_return})
 
@@ -295,7 +310,10 @@ class StockPicking(models.Model):
     def _prepare_sendcloud_item_vals_from_moves(self, move, package=False):
         self.ensure_one()
 
-        weight = self._sendcloud_convert_weight_to_kg(move.weight)
+        #_logger.info("KIT %s %s", move.sale_line_id.product_id.is_kits, move.product_id)
+        # Modify weight to get from product_id
+        weight = self._sendcloud_convert_weight_to_kg(move.product_id.weight)
+        # weight = self._sendcloud_convert_weight_to_kg(move.weight)
         if not package:
             quantity = int(move.product_uom_qty)  # TODO should be quantity_done ?
         else:
@@ -310,20 +328,29 @@ class StockPicking(models.Model):
 
         partner_state = self.partner_id.state_id.code
         state_requires_hs_code = self._check_state_requires_hs_code(partner_country, partner_state)
+        # Modify how to calc price from BOM (1/2)
+        if move.sale_line_id.purchase_price != 0:
+            price = round(((move.product_id.standard_price/move.sale_line_id.purchase_price)*move.sale_line_id.price_unit),2)
+        else:
+            price = move.sale_line_id.price_unit
+
+        description = move.product_id.display_name
 
         # Parcel items (mandatory)
         line_vals = {
-            "description": move.product_id.display_name,
+            "description": description,
+            #"description": move.product_id.display_name,
             "quantity": quantity,
             "weight": weight,
-            "value": move.sale_line_id.price_unit,
+            # Modify how to calc price from BOM (2/2)
+            "value": price,
+            #"value": move.sale_line_id.price_unit,
             # not converted to euro as the currency is always set
         }
+        #_logger.info("\nSENDCLOUD ITEM: Descr %s - Quanty %f - Weight %f - Price %f", move.product_id.display_name, quantity, weight, price)
         # Parcel items (mandatory when shipping outside of EU)
         if is_outside_eu or state_requires_hs_code:
-            parcel_item_outside_eu = self._prepare_sendcloud_parcel_items_outside_eu(
-                move
-            )
+            parcel_item_outside_eu = self._prepare_sendcloud_parcel_items_outside_eu(move)
             if not parcel_item_outside_eu.get("hs_code"):
                 raise ValidationError(
                     _(
@@ -354,6 +381,69 @@ class StockPicking(models.Model):
                 # TODO The list of properties of the product. Used as a JSON object with {‘key’: ‘value’}
             }
         )
+        return line_vals
+
+    def _prepare_sendcloud_item_vals_from_kit(self, move, package=False):
+        self.ensure_one()
+
+        #_logger.info("KIT %s %s", move.sale_line_id.product_id.is_kits, move.product_id)
+        # Modify weight to get from product_id
+        weight = self._sendcloud_convert_weight_to_kg(move.sale_line_id.product_id.weight)
+
+        quantity = int(move.product_uom_qty)  # TODO should be quantity_done ?
+        partner_country = self.partner_id.country_id.code
+        is_outside_eu = not self.partner_id.sendcloud_is_in_eu
+
+        partner_state = self.partner_id.state_id.code
+        state_requires_hs_code = self._check_state_requires_hs_code(partner_country, partner_state)
+        price = move.sale_line_id.price_unit
+        description = move.sale_line_id.product_id.display_name
+
+
+        # Parcel items (mandatory)
+        line_vals = {
+            "description": description,
+            "quantity": quantity,
+            "weight": weight,
+            # Modify how to calc price from BOM (2/2)
+            "value": price,
+            # not converted to euro as the currency is always set
+        }
+        #_logger.info("\nSENDCLOUD ITEM: Descr %s - Quanty %f - Weight %f - Price %f", move.product_id.display_name, quantity, weight, price)
+        # Parcel items (mandatory when shipping outside of EU)
+        if is_outside_eu or state_requires_hs_code:
+            parcel_item_outside_eu = self._prepare_sendcloud_parcel_items_outside_eu(move)
+            if not parcel_item_outside_eu.get("hs_code"):
+                raise ValidationError(
+                    _(
+                        "Harmonized System Code is mandatory when shipping outside of EU and to some states.\n"
+                        "You should set the HS Code for product %s"
+                    )
+                    % move.sale_line_id.product_tmpl_id.name
+                )
+            if not parcel_item_outside_eu.get("origin_country"):
+                raise ValidationError(
+                    _("Origin Country is mandatory when shipping outside of EU and to some states.")
+                )
+            line_vals.update(parcel_item_outside_eu)
+        # Parcel items (optional)
+        if move.sale_line_id.product_id.default_code:
+            line_vals.update(
+                {"sku": move.sale_line_id.product_id.default_code}
+            )  # TODO product.barcode or product.id
+        line_vals.update(
+            {
+                "product_id": ""
+                # TODO product_id: product_code, the internal ID of the product. Is there a way to retrieve product (internal_code) from Sendcloud?
+            }
+        )
+        line_vals.update(
+            {
+                "properties": {}
+                # TODO The list of properties of the product. Used as a JSON object with {‘key’: ‘value’}
+            }
+        )
+        #_logger.info("KIT %s", pprint.pformat(line_vals))
         return line_vals
 
     def _prepare_sendcloud_parcel_items_outside_eu(self, move):
@@ -404,6 +494,7 @@ class StockPicking(models.Model):
             # We can't use the package name here because it's not unique nor generated by a sequence
             vals["external_reference"] = self.name + "," + str(package.id)
             vals_list += [vals]
+            _logger.info("for package in colli %f",vals["weight"])
 
         if self.weight_bulk or (self.package_ids - colli) or not vals_list:
             weight = self._get_total_weight_bulk(total_sendcloud_package_weight)
@@ -412,6 +503,7 @@ class StockPicking(models.Model):
             vals = self._prepare_sendcloud_vals_from_picking()
             if vals:
                 vals["weight"] = weight
+                _logger.info("self.weight_bulk %f", vals["weight"])
                 vals["external_reference"] = self.name + "," + str(0)
                 vals_list += [vals]
 

@@ -41,6 +41,7 @@ class SendcloudIntegration(models.Model):
         "res.company", required=True, default=lambda self: self.env.company
     )
     active = fields.Boolean(default=True)
+    kit_product = fields.Boolean(default=False, help="If it's set KIT products will be sent to sendcloud like one product and not like it's components")
 
     @api.onchange("company_id")
     def _onchange_company_id(self):
