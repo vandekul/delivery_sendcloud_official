@@ -222,6 +222,7 @@ class StockPicking(models.Model):
         kit_description = ""
         kit_product = self.sudo().carrier_id.sendcloud_integration_id.kit_product
         for move in moves:
+            # If we want to send only KIT product and not all sub-products
             if move.sale_line_id.product_id.is_kits and kit_product:
                 if kit_description != move.sale_line_id.product_id.display_name and kit_product:
                     line_vals = self._prepare_sendcloud_item_vals_from_kit(move, package=package)
