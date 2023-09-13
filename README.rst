@@ -62,13 +62,13 @@ Go to Sendcloud > Configuration > Wizards > Setup the Sendcloud Integration. A w
 Select Odoo Integration. Start Setup. You will be redirected to a Sendcloud page asking you
 to authorize OdooShop to access your Sendcloud account. Click on Connect in the Sendcloud page.
 
-.. image:: /delivery_sendcloud_official/static/description/Image_20.png
+.. image:: /static/description/Image_20.png
 
 Go back to the Odoo Integration configuration. An integration "OdooShop" is now present
 in the Integration list view. Open the OdooShop Integration form. Edit the OdooShop Integration.
 The changes you make will be in sync, Sendcloud side, with the integration configuration.
 
-.. image:: /delivery_sendcloud_official/static/description/Image_30.png
+.. image:: /static/description/Image_30.png
 
 In case multiple integrations are present, sort the integrations by sequence, to allow
 Odoo to choose the default one that will be used.
@@ -76,17 +76,17 @@ Please note that when using the Odoo integration an "incoming order" is created 
 Sendcloud as soon as you validate the salesorder. The “incoming order” has status
 “in process” in Sendcloud and is not forwarded to the carrier yet.
 
-.. image:: /delivery_sendcloud_official/static/description/Image_40.png
+.. image:: /static/description/Image_40.png
 
 When you validate the delivery in Odoo the label is created and the pick-up assignment is send to the carrier.
 
-.. image:: /delivery_sendcloud_official/static/description/Image_50.png
+.. image:: /static/description/Image_50.png
 
 Sometimes our products are created as a KIT with this option (default is unchecked) you can ship the main product
 and not all its components. This is useful for creating the customs documents from Sendcloud which will have the
 same products as when you create the invoice in Odoo.
 
-.. image:: /delivery_sendcloud_official/static/description/image_170.png
+.. image:: /static/description/image_170.png
 
 In previous version there was a possibility to connect to the API integration instead of the Odoo integration.
 To benefit from Sendcloud support we highly recommend you to upgrade to the latest version of this module with
@@ -108,11 +108,11 @@ To synchronize Sendcloud objects for the first time:
 
 - Go to Sendcloud > Configuration > Wizards > Sync the Sendcloud Objects. A wizard will pop up.
 
-.. image:: ../delivery_sendcloud_official/static/description/Image_70.png
+.. image:: /static/description/Image_70.png
 
 - Select all the objects. Confirm. This will retrieve the required data from Sendcloud server.
 
-.. image:: ../delivery_sendcloud_official/static/description/Image_80.png
+.. image:: /static/description/Image_80.png
 
 Some Sendcloud objects will be automatically synchronized from the Sendcloud server to Odoo.
 Those Sendcloud objects are:
@@ -126,7 +126,7 @@ To configure how often those objects should be retrieved from the Sendcloud serv
 
 - Go to Settings > Technical > Automation > Scheduled Actions. Search Scheduled Actions for "Sendcloud".
 
-.. image:: ../delivery_sendcloud_official/static/description/Image_90.png
+.. image:: /static/description/Image_90.png
 
 - Set the "Execute Every" value according to your needs.
 
@@ -139,12 +139,12 @@ In case of multiple warehouses configured in Odoo (eg.: user belongs to group "M
 Go to Sendcloud > Configuration > Integration. Click on Configure Warehouse Addresses. A wizard will pop up.
 Set the corresponding Sendcloud Sender Address for each of the warehouse addresses.
 
-.. image:: ../delivery_sendcloud_official/static/description/Image_100.png
+.. image:: /static/description/Image_100.png
 
 Alternatively, in Inventory > Configuration > Warehouses, select an address. In the address form, go to Sales and Purchase tab and set the Sencloud Sender Address.
 In Sale Order > Delivery: select the Warehouse. Check that the address of the Warehouse has a Sendcloud Senser Address.
 
-.. image:: ../delivery_sendcloud_official/static/description/Image_110.png
+.. image:: /static/description/Image_110.png
 
 Initial sync of past orders
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -194,7 +194,7 @@ you should set a different prefix on the sequence out in your testenvironment.
 In debug mode, Technical/Sequences Identifiers/Sequences, select the sequence out and
 adjust this to WH/OUT/TEST for instance.
 
-.. image:: ../delivery_sendcloud_official/static/description/Image_120.png
+.. image:: /static/description/Image_120.png
 
 
 Usage
