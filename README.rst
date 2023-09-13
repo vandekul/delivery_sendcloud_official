@@ -57,7 +57,7 @@ the correct url (eg.: "https://demo.onestein.eu" instead of "http://localhost:80
 
 Go to Sendcloud > Configuration > Wizards > Setup the Sendcloud Integration. A wizard will pop up.
 
-.. image:: /delivery_sendcloud_official/static/description/Image_10.png
+.. image:: /static/description/Image_10.png
 
 Select Odoo Integration. Start Setup. You will be redirected to a Sendcloud page asking you
 to authorize OdooShop to access your Sendcloud account. Click on Connect in the Sendcloud page.
