@@ -221,22 +221,18 @@ class StockPicking(models.Model):
         total_weight = 0.0
         kit_description = ""
         kit_product = self.sudo().carrier_id.sendcloud_integration_id.kit_product
-        _logger.info("TEST kit_product %s", kit_product)
         for move in moves:
-            if move.sale_line_id.product_id.is_kits and kit_product :
+            if move.sale_line_id.product_id.is_kits and kit_product:
                 if kit_description != move.sale_line_id.product_id.display_name and kit_product:
                     line_vals = self._prepare_sendcloud_item_vals_from_kit(move, package=package)
                     kit_description = line_vals["description"]
                     total_weight += line_vals["weight"]
                     parcel_items += [line_vals]
-                    #_logger.info("KIT %s", pprint.pformat(line_vals))
             else:
                 line_vals = self._prepare_sendcloud_item_vals_from_moves(move, package=package)
                 parcel_items += [line_vals]
                 total_weight += line_vals["weight"]
-                #_logger.info("ELSE KIT %s", pprint.pformat(line_vals))
 
-        #_logger.info("KIT %s", pprint.pformat(parcel_items))
         vals["parcel_items"] = parcel_items
 
         # Parcel properties (optional)
@@ -341,7 +337,7 @@ class StockPicking(models.Model):
             "description": description,
             #"description": move.product_id.display_name,
             "quantity": quantity,
-            "weight": weight,
+            "weight": (weight*quantity),
             # Modify how to calc price from BOM (2/2)
             "value": price,
             #"value": move.sale_line_id.price_unit,
@@ -404,7 +400,7 @@ class StockPicking(models.Model):
         line_vals = {
             "description": description,
             "quantity": quantity,
-            "weight": weight,
+            "weight": (weight*quantity),
             # Modify how to calc price from BOM (2/2)
             "value": price,
             # not converted to euro as the currency is always set
