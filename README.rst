@@ -57,18 +57,18 @@ the correct url (eg.: "https://demo.onestein.eu" instead of "http://localhost:80
 
 Go to Sendcloud > Configuration > Wizards > Setup the Sendcloud Integration. A wizard will pop up.
 
-.. image:: ../delivery_sendcloud_official/static/description/Image_10.png
+.. image:: /delivery_sendcloud_official/static/description/Image_10.png
 
 Select Odoo Integration. Start Setup. You will be redirected to a Sendcloud page asking you
 to authorize OdooShop to access your Sendcloud account. Click on Connect in the Sendcloud page.
 
-.. image:: ../delivery_sendcloud_official/static/description/Image_20.png
+.. image:: /delivery_sendcloud_official/static/description/Image_20.png
 
 Go back to the Odoo Integration configuration. An integration "OdooShop" is now present
 in the Integration list view. Open the OdooShop Integration form. Edit the OdooShop Integration.
 The changes you make will be in sync, Sendcloud side, with the integration configuration.
 
-.. image:: ../delivery_sendcloud_official/static/description/Image_30.png
+.. image:: /delivery_sendcloud_official/static/description/Image_30.png
 
 In case multiple integrations are present, sort the integrations by sequence, to allow
 Odoo to choose the default one that will be used.
@@ -76,17 +76,17 @@ Please note that when using the Odoo integration an "incoming order" is created 
 Sendcloud as soon as you validate the salesorder. The “incoming order” has status
 “in process” in Sendcloud and is not forwarded to the carrier yet.
 
-.. image:: ../delivery_sendcloud_official/static/description/Image_40.png
+.. image:: /delivery_sendcloud_official/static/description/Image_40.png
 
 When you validate the delivery in Odoo the label is created and the pick-up assignment is send to the carrier.
 
-.. image:: ../delivery_sendcloud_official/static/description/Image_50.png
+.. image:: /delivery_sendcloud_official/static/description/Image_50.png
 
 Sometimes our products are created as a KIT with this option (default is unchecked) you can ship the main product
 and not all its components. This is useful for creating the customs documents from Sendcloud which will have the
 same products as when you create the invoice in Odoo.
 
-.. image:: ../delivery_sendcloud_official/static/description/image_170.png
+.. image:: /delivery_sendcloud_official/static/description/image_170.png
 
 In previous version there was a possibility to connect to the API integration instead of the Odoo integration.
 To benefit from Sendcloud support we highly recommend you to upgrade to the latest version of this module with
