@@ -510,6 +510,7 @@ class StockPicking(models.Model):
         self.ensure_one()
         min_weight = self.carrier_id.sendcloud_min_weight
         max_weight = self.carrier_id.sendcloud_max_weight
+        _logger.info("min_weight %f, max_weight %f , weight %f, self.weight %f", min_weight, max_weight, weight, self.weight)
         if min_weight and max_weight and not (min_weight <= weight <= max_weight):
             raise ValidationError(
                 _(
