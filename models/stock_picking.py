@@ -344,7 +344,7 @@ class StockPicking(models.Model):
             #"value": move.sale_line_id.price_unit,
             # not converted to euro as the currency is always set
         }
-        #_logger.info("\nSENDCLOUD ITEM: Descr %s - Quanty %f - Weight %f - Price %f", move.product_id.display_name, quantity, weight, price)
+        _logger.info("\nSENDCLOUD ITEM: Descr %s - Quanty %f - Weight %f - Price %f", move.product_id.display_name, quantity, weight, price)
         # Parcel items (mandatory when shipping outside of EU)
         if is_outside_eu or state_requires_hs_code:
             parcel_item_outside_eu = self._prepare_sendcloud_parcel_items_outside_eu(move)
