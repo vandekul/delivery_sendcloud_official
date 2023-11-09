@@ -329,7 +329,7 @@ class StockPicking(models.Model):
         if move.sale_line_id.purchase_price != 0:
             price = round(((move.product_id.standard_price/move.sale_line_id.purchase_price)*move.sale_line_id.price_unit),2)
         else:
-            price = move.sale_line_id.price_unit
+            price = round(move.sale_line_id.price_unit,2)
 
         description = move.product_id.display_name
 
@@ -393,7 +393,7 @@ class StockPicking(models.Model):
 
         partner_state = self.partner_id.state_id.code
         state_requires_hs_code = self._check_state_requires_hs_code(partner_country, partner_state)
-        price = move.sale_line_id.price_unit
+        price = round(move.sale_line_id.price_unit,2)
         description = move.sale_line_id.product_id.display_name
 
 
